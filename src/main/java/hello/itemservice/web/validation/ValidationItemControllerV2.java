@@ -10,6 +10,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -155,9 +156,15 @@ public class ValidationItemControllerV2 {
                             RedirectAttributes redirectAttributes) {
         log.info("objectName={}", bindingResult.getObjectName());
         log.info("target={}", bindingResult.getTarget());
+
+        //검증 로직
+//        ValidationUtils.rejectIfEmptyOrWhitespace(bindingResult, "itemName", "required");
+
         if (!StringUtils.hasText(item.getItemName())) {
             bindingResult.rejectValue("itemName", "required");
         }
+
+
         if (item.getPrice() == null || item.getPrice() < 1000 || item.getPrice() >
                 1000000) {
             bindingResult.rejectValue("price", "range", new Object[]{1000, 1000000},
@@ -166,6 +173,8 @@ public class ValidationItemControllerV2 {
         if (item.getQuantity() == null || item.getQuantity() > 10000) {
             bindingResult.rejectValue("quantity", "max", new Object[]{9999}, null);
         }
+
+
         //특정 필드 예외가 아닌 전체 예외
         if (item.getPrice() != null && item.getQuantity() != null) {
             int resultPrice = item.getPrice() * item.getQuantity();
